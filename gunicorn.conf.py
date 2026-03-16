@@ -26,5 +26,5 @@ loglevel = "info"
 # Process naming
 proc_name = "ayurparam-ai"
 
-# Preload app to share model across threads
-preload_app = True
+# Do NOT preload app. Preloading massive ML models blocks Gunicorn's master process and causes Memory Limits/SIGKILL.
+preload_app = False
