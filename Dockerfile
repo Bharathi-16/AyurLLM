@@ -21,9 +21,9 @@ RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
 WORKDIR /app
 
 # Install Python dependencies first (for Docker cache efficiency)
-COPY requirements-prod.txt .
+COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements-prod.txt
+    pip install --no-cache-dir -r requirements.txt
 
 # Copy project files
 COPY app/ ./app/
@@ -34,11 +34,6 @@ COPY gunicorn.conf.py .
 # Create data directory for SQLite
 RUN mkdir -p /app/data /app/logs
 
-# Expose port
-EXPOSE 8080
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
-    CMD curl -f http://localhost:8080/api/status || exit 1
+# Railway dynamically assigns the PORT environment variable.
 
 CMD ["gunicorn", "--config", "gunicorn.conf.py", "main:app"]

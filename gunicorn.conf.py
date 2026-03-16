@@ -3,8 +3,11 @@ Gunicorn Production Config for AyurParam AI
 """
 import multiprocessing
 
+import os
+
 # Server socket
-bind = "0.0.0.0:8080"
+port = os.environ.get("PORT", "8080")
+bind = f"0.0.0.0:{port}"
 
 # Workers — Use 1 worker for ML model (shared GPU memory)
 workers = 1
