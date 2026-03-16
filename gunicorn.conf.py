@@ -1,0 +1,27 @@
+"""
+Gunicorn Production Config for AyurParam AI
+"""
+import multiprocessing
+
+# Server socket
+bind = "0.0.0.0:8080"
+
+# Workers — Use 1 worker for ML model (shared GPU memory)
+workers = 1
+threads = 4
+worker_class = "gthread"
+
+# Timeout — model loading can take a while
+timeout = 300
+graceful_timeout = 120
+
+# Logging
+accesslog = "-"
+errorlog = "-"
+loglevel = "info"
+
+# Process naming
+proc_name = "ayurparam-ai"
+
+# Preload app to share model across threads
+preload_app = True
