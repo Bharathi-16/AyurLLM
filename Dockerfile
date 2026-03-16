@@ -28,7 +28,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy project files
 COPY app/ ./app/
 COPY templates/ ./templates/
-COPY run.py .
+COPY main.py .
 COPY gunicorn.conf.py .
 
 # Create data directory for SQLite
@@ -41,5 +41,4 @@ EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=10s --retries=3 \
     CMD curl -f http://localhost:8080/api/status || exit 1
 
-# Run with Gunicorn (production server)
-CMD ["gunicorn", "--config", "gunicorn.conf.py", "run:app"]
+CMD ["gunicorn", "--config", "gunicorn.conf.py", "main:app"]
