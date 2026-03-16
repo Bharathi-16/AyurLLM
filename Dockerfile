@@ -1,28 +1,28 @@
 # ============================================
-# AyurParam AI — Production Dockerfile (GPU)
+# AyurParam AI — Production Dockerfile
 # ============================================
-FROM nvidia/cuda:12.1.1-runtime-ubuntu22.04
+FROM python:3.11-slim
 
 # Prevent interactive prompts during package install
-ENV DEBIAN_FRONTEND=noninteractive
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Install Python 3.11
+# Install critical system packages (some Python ML libraries need build tools)
 RUN apt-get update && apt-get install -y \
-    python3.11 python3.11-venv python3-pip \
-    curl git && \
+    curl git build-essential && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
-
-# Set Python 3.11 as default
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1 && \
-    update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1
 
 WORKDIR /app
 
 # Install Python dependencies first (for Docker cache efficiency)
 COPY requirements.txt .
+
+# OPTIMIZATION: Railway typically does not offer GPUs on basic plans.
+# The default Linux PyTorch size is 2.8 GB because of bundled CUDA libraries.
+# We explicitly install the CPU version of PyTorch first. This reduces PyTorch size from 2.8 GB to 150 MB!
 RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir torch==2.2.2 --index-url https://download.pytorch.org/whl/cpu && \
     pip install --no-cache-dir -r requirements.txt
 
 # Copy project files
